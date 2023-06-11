@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FieldModel {
+public class FieldModel: MonoBehaviour {
+    //TODO: убрать монобех, тест
+    
+    
     //чтобы у игрока не было задержки на инпут, первый свайп обрабатываем сразу
     public event Action<Vector2Int, Vector2Int> OnFirstSwipeEvent;
 
     //вызываем после того, как нормализовали поле, чтобы отобразить все действия по нормализации во вьюшке
-    public event Action<List<Vector2Int>, Dictionary<Vector2Int, Vector2Int>> OnFieldNormalizedEvent; 
+    public event Action<List<Vector2Int>, List<(Vector2Int, Vector2Int)>> OnFieldNormalizedEvent; 
 
 
     int[,] _fieldArray;
@@ -18,12 +21,50 @@ public class FieldModel {
     int _blueSquareRepresentation = 2;
 
 
-    //эти два поля хранят порядок действий по нормализации для вьюшки
+    //эти два поля хранят порядок действий по нормализации для вьюшки 
     List<Vector2Int> _squaresToDelete; 
-    Dictionary<Vector2Int, Vector2Int> _squaresToSwap;
+    List<(Vector2Int, Vector2Int)> _squaresToSwap;
 
     List<Tuple<Vector2Int, Vector2Int>> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
     readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
+    
+    void Start() {
+        Initialize();
+    }
+
+    public void Initialize() {
+      //  _fieldArray = fieldArray;
+        _squaresToDelete = new List<Vector2Int>();
+        _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
+        _crossToCheckForMatch = new List<Tuple<Vector2Int, Vector2Int>>();
+
+
+        //test
+        _fieldArray = new int[,] {
+            {0, 0, 2, 2},
+            {0, 2, 1, 0},
+            {0, 1, 1, 0}
+        };
+        
+        FirstSwipe(new Vector2Int(1, 2), new Vector2Int(1, 3));
+    }
+    
+    
+    //test
+    public void PrintMatrix(int[,] matrix) {
+        Debug.Log("_________________________________________");
+        for (int row = 0; row < matrix.GetLength(0); row++) {
+
+            var line = new int[matrix.GetLength(1)];
+
+            for (int column = 0; column < matrix.GetLength(1); column++) {
+                line[column] = matrix[row, column];
+            }
+                
+            Debug.Log(String.Join(",",line));
+        }
+    }
+    
 
     public void FirstSwipe(Vector2Int start, Vector2Int target) {
         if(!CheckIfInBoundaries(target.x, target.y)) return; //размер поля по идее надо ограничивать примерно по размеру экрана, поэтому тут тоже проверяем, внутри границ или нет
@@ -40,7 +81,9 @@ public class FieldModel {
         bool dropped = true;
         bool deleted = true;
         while (dropped || deleted) {
+            PrintMatrix(_fieldArray);
             DropSquares(out dropped);
+            PrintMatrix(_fieldArray);
             DeleteSquares(out deleted);
         }
         OnFieldNormalizedEvent?.Invoke(_squaresToDelete, _squaresToSwap);
@@ -48,7 +91,7 @@ public class FieldModel {
 
 
     void DropSquares(out bool dropped) {
-        _squaresToSwap.Add(_separator, _separator);
+        _squaresToSwap.Add((_separator, _separator));
         int droppedSquares = 0;
         //проходимся по полю "снизу вверх", чтобы опускались сначала те квадраты, которые стоят ниже
         for (int i = _fieldArray.GetLength(0) - 1; i >= 0; i--) {
@@ -57,8 +100,8 @@ public class FieldModel {
                     _fieldArray[i, j] == _blueSquareRepresentation) {
                     var emptySquaresBelow = EmptySquaresBelow(i, j);
                     if (emptySquaresBelow != 0) {
-                        _squaresToSwap.Add(new Vector2Int(i,j), new Vector2Int(i-emptySquaresBelow, j));
-                        _fieldArray[i - emptySquaresBelow, j] = _fieldArray[i, j];
+                        _squaresToSwap.Add( (new Vector2Int(i,j), new Vector2Int(i+emptySquaresBelow, j)));
+                        _fieldArray[i + emptySquaresBelow, j] = _fieldArray[i, j];
                         _fieldArray[i, j] = _emptyRepresentation;
                         droppedSquares++;
                     }
@@ -93,8 +136,8 @@ public class FieldModel {
     int EmptySquaresBelow(int i, int j) {
         int emptySquaresBelow = 0;
         for (int k = 1; k < _fieldArray.GetLength(0); k++) {
-            if (i - k < 0) return emptySquaresBelow;
-            if (_fieldArray[i - k, j] == _emptyRepresentation) emptySquaresBelow++;
+            if (i + k > _fieldArray.GetLength(0) - 1) return emptySquaresBelow;
+            if (_fieldArray[i + k, j] == _emptyRepresentation) emptySquaresBelow++;
         }
         return emptySquaresBelow;
     }
