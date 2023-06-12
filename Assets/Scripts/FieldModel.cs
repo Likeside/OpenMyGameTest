@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Scripts {
-    public class FieldModel : MonoBehaviour {
-        //TODO: убрать монобех, тест
-
-
+    public class FieldModel {
         //чтобы у игрока не было задержки на инпут, первый свайп обрабатываем сразу
         public event Action<Vector2Int, Vector2Int> OnFirstSwipeEvent;
 
@@ -26,11 +23,7 @@ namespace Scripts {
 
         List<(Vector2Int, Vector2Int)> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
         readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
-
-        void Start() {
-            Initialize();
-        }
-
+        
         public void Initialize() {
             //  _fieldArray = fieldArray;
             //TODO: не выделять память под новые, если не первый запуск
@@ -41,14 +34,11 @@ namespace Scripts {
 
             //test
             _fieldArray = new int[,] {
-                {0, 0, 1, 0},
-                {0, 0, 1, 0},
-                {1, 1, 2, 1},
-                {2, 2, 1, 0},
-                {1, 1, 1, 1}
+                {0, 1, 0},
+                {1, 1, 0}
             };
 
-            FirstSwipe(new Vector2Int(3, 2), new Vector2Int(3, 3));
+          //  FirstSwipe(new Vector2Int(3, 2), new Vector2Int(3, 3));
         }
 
 

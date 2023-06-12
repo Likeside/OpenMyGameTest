@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,14 +7,24 @@ using UnityEngine;
 namespace Scripts {
     public class FieldView: MonoBehaviour {
 
-        List<Square> _allSquares;
-        
+       [SerializeField] List<Square> _allSquares;
+
+       public event Action<Vector2Int, Vector2Int> OnTryingToSwapFirstEvent; 
+
         readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue);
 
         int _deletedSquares;
         int _droppedSquares;
+
+
+        public void TryToSwapFirst(Vector2Int start, Vector2Int target) {
+            OnTryingToSwapFirstEvent?.Invoke(start, target);
+        }
         
         public void SwapFirst(Vector2Int start, Vector2Int target) {
+            foreach (var square in _allSquares) {
+                square.SetInteraction(false);
+            }
             var square1 = _allSquares.FirstOrDefault(s => s.Coords == start);
             var square2 = _allSquares.FirstOrDefault(s => s.Coords == target);
             if (square1 != null) {
@@ -25,15 +36,21 @@ namespace Scripts {
         }
         
         public void Normalize(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
+            StartCoroutine(NormalizeCor(squaresToDelete, squaresToDrop));
+        }
+
+        IEnumerator NormalizeCor(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
+            yield return new WaitForSeconds(2f); //TODO: задавать извне, ждем, пока свапнется первый квадрат
             _droppedSquares = 0;
             _deletedSquares = 0;
             Drop(squaresToDrop, squaresToDelete);
         }
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
-            for (int i = _droppedSquares; i < squaresToDrop.Count; i++) {
+            for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
-                if (squaresToDrop[i].Item1 == _separator) {
+                UnblockInteraction(squaresToDrop, squaresToDelete);
+                if (squaresToDrop[i].Item1 == _separator || i == squaresToDrop.Count) {
                     Delete(squaresToDrop, squaresToDelete);
                     return;
                 }
@@ -44,11 +61,21 @@ namespace Scripts {
         void Delete(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
+                UnblockInteraction(squaresToDrop, squaresToDelete);
                 if (squaresToDelete[i] == _separator) {
                     Drop(squaresToDrop, squaresToDelete);
                     return;
                 }
                 DeleteOneSquare(squaresToDelete[i]);
+            }
+        }
+
+
+        void UnblockInteraction(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
+            if (_droppedSquares == squaresToDrop.Count && _deletedSquares == squaresToDelete.Count) {
+                foreach (var square in _allSquares) {
+                    square.SetInteraction(true);
+                }
             }
         }
         
