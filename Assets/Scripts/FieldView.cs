@@ -48,11 +48,11 @@ namespace Scripts {
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
             Debug.Log("Drop");
-            float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x);
+            float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x)/2f;
             for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
                 if (i < squaresToDrop.Count) {
-                    float diff = Mathf.Abs(squaresToDrop[i].Item1.x - squaresToDrop[i].Item2.x);
+                    float diff = Mathf.Abs(squaresToDrop[i].Item1.x - squaresToDrop[i].Item2.x)/2f;
                     if (diff > delay) {
                         delay = diff;
                     }
