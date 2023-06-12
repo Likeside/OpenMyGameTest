@@ -18,19 +18,14 @@ namespace Scripts {
         float _speed = 0.5f; //todo: задавать при спавне
         
         public void Move(int stepsVertical, int stepsHorizontal) {
+            //т.к. позиция квадрата не равна координате, учитываем скейл, перемещаем относительно текущей позиции
             var targetPos = transform.localPosition + new Vector3(stepsHorizontal * transform.localScale.x,
                 -stepsVertical * transform.localScale.y);
             float speedModifier = Math.Abs(stepsVertical) > Math.Abs(stepsHorizontal) ? stepsVertical : stepsHorizontal;
-            transform.DOLocalMove(targetPos, _speed * Math.Abs(speedModifier)).onComplete = (() => StartCoroutine(SetCoords(new Vector2Int(stepsVertical, stepsHorizontal))));
-
-          //  Coords += new Vector2Int(stepsVertical, stepsHorizontal);//тут возможно икс и игреком перепутаны, проверить
+            transform.DOLocalMove(targetPos, _speed * Math.Abs(speedModifier));
+            Coords += new Vector2Int(stepsVertical, stepsHorizontal);
         }
-
-        IEnumerator SetCoords(Vector2Int modifier) {
-            Coords += modifier;
-            yield return new WaitForFixedUpdate();
-        }
-
+        
         public void Delete() {
             transform.DOScale(Vector3.zero, _speed);//TODO: добавить анимацию 
             Coords = _deletedSquareCoords;

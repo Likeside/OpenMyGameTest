@@ -62,7 +62,7 @@ namespace Scripts {
         
         public void FirstSwipe(Vector2Int start, Vector2Int target) {
             if (!CheckIfInBoundaries(target.x, target.y)) return; //размер поля по идее надо ограничивать примерно по размеру экрана, поэтому тут тоже проверяем, внутри границ или нет
-            if (target.x > start.x && _fieldArray[target.x, target.y] == _emptyRepresentation) return; //на пустое место не подкидываем квадрат
+            if (target.x < start.x && _fieldArray[target.x, target.y] == _emptyRepresentation) return; //на пустое место не подкидываем квадрат
             (_fieldArray[start.x, start.y], _fieldArray[target.x, target.y]) = (_fieldArray[target.x, target.y], _fieldArray[start.x, start.y]); //свапаем
             OnFirstSwipeEvent?.Invoke(start, target);
             Normalize();

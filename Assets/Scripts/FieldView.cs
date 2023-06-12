@@ -40,7 +40,7 @@ namespace Scripts {
         }
 
         IEnumerator NormalizeCor(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
-            yield return new WaitForSeconds(2f); //TODO: задавать извне, ждем, пока свапнется первый квадрат
+            yield return new WaitForSeconds(1f); //TODO: задавать извне, ждем, пока свапнется первый квадрат
             _droppedSquares = 1;
             _deletedSquares = 1;
             Drop(squaresToDrop, squaresToDelete);

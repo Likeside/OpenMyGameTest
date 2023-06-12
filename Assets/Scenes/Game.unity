@@ -365,7 +365,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6981132, g: 0.49724102, b: 0.49724102, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -973,8 +973,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _view: {fileID: 1870225758}
-  _start: {x: 0, y: 1}
-  _target: {x: 0, y: 2}
+  _start: {x: 3, y: 1}
+  _target: {x: 3, y: 2}
   _testBtn: {fileID: 1529020585}
 --- !u!114 &1870225758
 MonoBehaviour:
@@ -992,6 +992,7 @@ MonoBehaviour:
   - {fileID: 1453427812}
   - {fileID: 1968632682}
   - {fileID: 1204463126}
+  - {fileID: 371885194}
 --- !u!1 &1968632681
 GameObject:
   m_ObjectHideFlags: 0
