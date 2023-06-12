@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Scripts {
@@ -15,7 +14,14 @@ namespace Scripts {
         int _droppedSquares;
         
         public void SwapFirst(Vector2Int start, Vector2Int target) {
-            
+            var square1 = _allSquares.FirstOrDefault(s => s.Coords == start);
+            var square2 = _allSquares.FirstOrDefault(s => s.Coords == target);
+            if (square1 != null) {
+                square1.Move(target.x - start.x, target.y - start.y);
+            }
+            if (square2 != null) {
+                square2.Move(start.x - target.x, start.y - target.sqrMagnitude);
+            }
         }
         
         public void Normalize(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {

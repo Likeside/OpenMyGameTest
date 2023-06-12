@@ -13,22 +13,18 @@ namespace Scripts {
 
         //вызываем после того, как нормализовали поле, чтобы отобразить все действия по нормализации во вьюшке
         public event Action<List<Vector2Int>, List<(Vector2Int, Vector2Int)>> OnFieldNormalizedEvent;
-
-
+        
         int[,] _fieldArray;
 
         int _emptyRepresentation = 0;
         int _orangeSquareRepresentation = 1;
         int _blueSquareRepresentation = 2;
-
-
+        
         //эти два поля хранят порядок действий по нормализации для вьюшки 
         List<Vector2Int> _squaresToDelete;
         List<(Vector2Int, Vector2Int)> _squaresToSwap;
 
-        List<(Vector2Int, Vector2Int)>
-            _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
-
+        List<(Vector2Int, Vector2Int)> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
         readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
 
         void Start() {
@@ -37,6 +33,7 @@ namespace Scripts {
 
         public void Initialize() {
             //  _fieldArray = fieldArray;
+            //TODO: не выделять память под новые, если не первый запуск
             _squaresToDelete = new List<Vector2Int>();
             _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
             _crossToCheckForMatch = new List<(Vector2Int, Vector2Int)>();
@@ -69,16 +66,11 @@ namespace Scripts {
                 Debug.Log(String.Join(",", line));
             }
         }
-
-
+        
         public void FirstSwipe(Vector2Int start, Vector2Int target) {
-            if (!CheckIfInBoundaries(target.x, target.y))
-                return; //размер поля по идее надо ограничивать примерно по размеру экрана, поэтому тут тоже проверяем, внутри границ или нет
-            if (target.x > start.x && _fieldArray[target.x, target.y] == _emptyRepresentation)
-                return; //на пустое место не подкидываем квадрат
-
-            (_fieldArray[start.x, start.y], _fieldArray[target.x, target.y]) =
-                (_fieldArray[target.x, target.y], _fieldArray[start.x, start.y]); //свапаем
+            if (!CheckIfInBoundaries(target.x, target.y)) return; //размер поля по идее надо ограничивать примерно по размеру экрана, поэтому тут тоже проверяем, внутри границ или нет
+            if (target.x > start.x && _fieldArray[target.x, target.y] == _emptyRepresentation) return; //на пустое место не подкидываем квадрат
+            (_fieldArray[start.x, start.y], _fieldArray[target.x, target.y]) = (_fieldArray[target.x, target.y], _fieldArray[start.x, start.y]); //свапаем
             OnFirstSwipeEvent?.Invoke(start, target);
             Normalize();
         }
@@ -94,11 +86,9 @@ namespace Scripts {
                 PrintMatrix(_fieldArray);
                 DeleteSquares(out deleted);
             }
-
             OnFieldNormalizedEvent?.Invoke(_squaresToDelete, _squaresToSwap);
         }
-
-
+        
         void DropSquares(out bool dropped) {
             _squaresToSwap.Add((_separator, _separator));
             int droppedSquares = 0;
@@ -114,11 +104,9 @@ namespace Scripts {
                             _fieldArray[i, j] = _emptyRepresentation;
                             droppedSquares++;
                         }
-
                     }
                 }
             }
-
             dropped = droppedSquares > 0;
         }
 
@@ -136,12 +124,10 @@ namespace Scripts {
                     }
                 }
             }
-
             for (int i = start; i < _squaresToDelete.Count; i++) {
                 //после того, как все вычислили, заменяем все удаленные квадраты на нули, начиная с сепаратора
                 _fieldArray[_squaresToDelete[i].x, _squaresToDelete[i].y] = _emptyRepresentation;
             }
-
             deleted = deletedSquareLines > 0;
         }
 
@@ -151,7 +137,6 @@ namespace Scripts {
                 if (i + k > _fieldArray.GetLength(0) - 1) return emptySquaresBelow;
                 if (_fieldArray[i + k, j] == _emptyRepresentation) emptySquaresBelow++;
             }
-
             return emptySquaresBelow;
         }
 
@@ -170,7 +155,6 @@ namespace Scripts {
                     }
                 }
             }
-
             return squareMustBeDeleted;
         }
 
@@ -189,7 +173,6 @@ namespace Scripts {
             if (i >= _fieldArray.GetLength(0) || i < 0 || j >= _fieldArray.GetLength(1) || j < 0) {
                 return false;
             }
-
             return true;
         }
     }
