@@ -25,7 +25,7 @@ public class FieldModel: MonoBehaviour {
     List<Vector2Int> _squaresToDelete; 
     List<(Vector2Int, Vector2Int)> _squaresToSwap;
 
-    List<Tuple<Vector2Int, Vector2Int>> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
+    List<(Vector2Int, Vector2Int)> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
     readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
     
     void Start() {
@@ -36,17 +36,19 @@ public class FieldModel: MonoBehaviour {
       //  _fieldArray = fieldArray;
         _squaresToDelete = new List<Vector2Int>();
         _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
-        _crossToCheckForMatch = new List<Tuple<Vector2Int, Vector2Int>>();
+        _crossToCheckForMatch = new List<(Vector2Int, Vector2Int)>();
 
 
         //test
         _fieldArray = new int[,] {
+            {0, 0, 1, 0},
+            {0, 0, 1, 0},
             {0, 0, 2, 2},
             {0, 2, 1, 0},
-            {0, 1, 1, 0}
+            {1, 1, 1, 0}
         };
         
-        FirstSwipe(new Vector2Int(1, 2), new Vector2Int(1, 3));
+        FirstSwipe(new Vector2Int(3, 2), new Vector2Int(3, 3));
     }
     
     
@@ -158,14 +160,14 @@ public class FieldModel: MonoBehaviour {
         }
         return squareMustBeDeleted;
     }
-    List<Tuple<Vector2Int, Vector2Int>> GetCrossToCheckForMatch(int i, int j) {
+    List<(Vector2Int, Vector2Int)> GetCrossToCheckForMatch(int i, int j) {
         //получаем координаты, формирующие "крест". Предполагается, что у креста одна "сторона" это 3 квадрата,
         //но в идеале количество матчашихся квадратов задавать извне и проходиться циклом, вместо кортежа использовать список
         _crossToCheckForMatch.Clear();
-        _crossToCheckForMatch.Add(new Tuple<Vector2Int, Vector2Int>(new Vector2Int(i + 1, j), new Vector2Int(i + 2, j)));
-        _crossToCheckForMatch.Add(new Tuple<Vector2Int, Vector2Int>(new Vector2Int(i - 1, j), new Vector2Int(i - 2, j)));
-        _crossToCheckForMatch.Add(new Tuple<Vector2Int, Vector2Int>(new Vector2Int(i, j + 1), new Vector2Int(i, j + 2)));
-        _crossToCheckForMatch.Add(new Tuple<Vector2Int, Vector2Int>(new Vector2Int(i, j - 1), new Vector2Int(i, j - 2)));
+        _crossToCheckForMatch.Add((new Vector2Int(i + 1, j), new Vector2Int(i + 2, j)));
+        _crossToCheckForMatch.Add((new Vector2Int(i - 1, j), new Vector2Int(i - 2, j)));
+        _crossToCheckForMatch.Add((new Vector2Int(i, j + 1), new Vector2Int(i, j + 2)));
+        _crossToCheckForMatch.Add((new Vector2Int(i, j - 1), new Vector2Int(i, j - 2)));
         return _crossToCheckForMatch;
     }
     bool CheckIfInBoundaries(int i, int j) {
