@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Scripts {
 
         AnimationConfigSO _animationConfigSo;
         readonly Vector2Int _deletedSquareCoords = new(Int32.MaxValue, -Int32.MaxValue);
-        float _speed = 0.5f; //todo: задавать при спавне
+        float _speed = 0.5f; 
         int _maxSquares;
         int _representation;
         
@@ -41,6 +42,7 @@ namespace Scripts {
         public void Delete() {
             Coords = _deletedSquareCoords;
             _animator.SetTrigger(_animationConfigSo.animationConfigs.FirstOrDefault(_ => _.representation == _representation).destroyTrigger);
+            StartCoroutine(DeleteCor());
         }
 
         public void SetInteraction(bool active) {
@@ -64,13 +66,18 @@ namespace Scripts {
             }
             else {
                 if (eventData.delta.y > 0) {
-                    target += Vector2Int.right;
+                    target += Vector2Int.left;
                 }
                 else {
-                    target += Vector2Int.left;
+                    target += Vector2Int.right;
                 }
             }
             OnTryingToSwapEvent?.Invoke(Coords, target);
+        }
+
+        IEnumerator DeleteCor() {
+            yield return new WaitForSeconds(0.5f);
+            transform.localScale = Vector3.zero;
         }
 
         public void OnDrag(PointerEventData eventData) {

@@ -56,16 +56,16 @@ namespace Scripts {
         }
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
-            float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x)/2f; 
+            Debug.Log("Drop");
+            float delay = MathF.Abs(squaresToDrop[0].Item2.x - squaresToDrop[0].Item1.x)/2f; 
             for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
                 if (i < squaresToDrop.Count) {
-                    float diff = Mathf.Abs(squaresToDrop[i].Item1.x - squaresToDrop[i].Item2.x)/2f;
+                    float diff = Mathf.Abs(squaresToDrop[i].Item2.x - squaresToDrop[i].Item1.x)/2f;
                     if (diff > delay) {
                         delay = diff; //вычисляем "самый длинный путь падения" блока, чтобы перейти к удалению только после того, как упадет он
                     }
                 }
-                UnblockInteraction(squaresToDrop, squaresToDelete, delay);
                 if (i == squaresToDrop.Count || squaresToDrop[i].Item1 == _separator) {
                     StartCoroutine(DeleteCor(squaresToDrop, squaresToDelete, delay)); //встретили сепаратор, перешли к этапу удаления
                     return;
@@ -74,10 +74,12 @@ namespace Scripts {
             }
         }
         IEnumerator DeleteCor(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
+            Debug.Log("Delete");
             yield return new WaitForSeconds(delay);
+            float interactionDelay = squaresToDelete.Count > 1 ? 0.5f : 0f;
+            UnblockInteraction(squaresToDrop, squaresToDelete, interactionDelay);
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
-                UnblockInteraction(squaresToDrop, squaresToDelete, 1f);
                 if (squaresToDelete[i] == _separator) {
                    Drop(squaresToDrop, squaresToDelete); //встретили сепаратор, перешли к этапу падения
                     yield break;
@@ -103,14 +105,14 @@ namespace Scripts {
         }
         
         void UnblockInteraction(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
-            if (_droppedSquares == squaresToDrop.Count && _deletedSquares == squaresToDelete.Count) {
-                Debug.Log("Unblocking interaction");
+            if (_droppedSquares >= squaresToDrop.Count && _deletedSquares >= squaresToDelete.Count ) {
                 StartCoroutine(UnblockInteractionCor(delay));
             }
         }
 
         IEnumerator UnblockInteractionCor(float delay) {
             yield return new WaitForSeconds(delay);
+            Debug.Log("Unblocking interaction with delay: " + delay);
             foreach (var square in _allSquares) {
                 square.SetInteraction(true);
             }
