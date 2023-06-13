@@ -7,21 +7,28 @@ using UnityEngine;
 namespace Scripts {
     public class FieldView: MonoBehaviour {
 
-       [SerializeField] List<Square> _allSquares;
+        [SerializeField] GridBase _grid;
+        List<Square> _allSquares;
 
-       public event Action<Vector2Int, Vector2Int> OnTryingToSwapFirstEvent; 
+       public event Action<Vector2Int, Vector2Int> OnTryingToSwapFirstEvent;
+       public event Action OnAllClearedEvent;
+       
+       readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue);
+       int _deletedSquares;
+       int _droppedSquares;
+       bool _win;
 
-        readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue);
 
-        int _deletedSquares;
-        int _droppedSquares;
-
+       public void Initialize(int[,] fieldArray) {
+           _allSquares = _grid.CreateGrid(fieldArray);
+       }
 
         public void TryToSwapFirst(Vector2Int start, Vector2Int target) {
             OnTryingToSwapFirstEvent?.Invoke(start, target);
         }
         
         public void SwapFirst(Vector2Int start, Vector2Int target) {
+            Debug.Log("Blocking interaction");
             foreach (var square in _allSquares) {
                 square.SetInteraction(false);
             }
@@ -35,7 +42,8 @@ namespace Scripts {
             }
         }
         
-        public void Normalize(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
+        public void Normalize(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop, bool win) {
+            _win = win;
             StartCoroutine(NormalizeCor(squaresToDelete, squaresToDrop));
         }
 
@@ -57,7 +65,7 @@ namespace Scripts {
                         delay = diff;
                     }
                 }
-                UnblockInteraction(squaresToDrop, squaresToDelete);
+                UnblockInteraction(squaresToDrop, squaresToDelete, delay);
                 if (i == squaresToDrop.Count || squaresToDrop[i].Item1 == _separator) {
                     StartCoroutine(DeleteCor(squaresToDrop, squaresToDelete, delay));
                     return;
@@ -70,7 +78,7 @@ namespace Scripts {
             Debug.Log("Delete");
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
-                UnblockInteraction(squaresToDrop, squaresToDelete);
+                UnblockInteraction(squaresToDrop, squaresToDelete, 1f);
                 if (squaresToDelete[i] == _separator) {
                    Drop(squaresToDrop, squaresToDelete);
                     yield break;
@@ -97,12 +105,19 @@ namespace Scripts {
             square.Delete();
         }
         
-        void UnblockInteraction(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
+        void UnblockInteraction(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
             if (_droppedSquares == squaresToDrop.Count && _deletedSquares == squaresToDelete.Count) {
-                foreach (var square in _allSquares) {
-                    square.SetInteraction(true);
-                }
+                Debug.Log("Unblocking interaction");
+                StartCoroutine(UnblockInteractionCor(delay));
             }
+        }
+
+        IEnumerator UnblockInteractionCor(float delay) {
+            yield return new WaitForSeconds(delay);
+            foreach (var square in _allSquares) {
+                square.SetInteraction(true);
+            }
+            if (_win) OnAllClearedEvent?.Invoke();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Scripts {
         public event Action<Vector2Int, Vector2Int> OnFirstSwipeEvent;
 
         //вызываем после того, как нормализовали поле, чтобы отобразить все действия по нормализации во вьюшке
-        public event Action<List<Vector2Int>, List<(Vector2Int, Vector2Int)>> OnFieldNormalizedEvent;
+        public event Action<List<Vector2Int>, List<(Vector2Int, Vector2Int)>, bool> OnFieldNormalizedEvent;
         
         int[,] _fieldArray;
 
@@ -24,14 +24,15 @@ namespace Scripts {
         List<(Vector2Int, Vector2Int)> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
         readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
         
-        public void Initialize() {
-            //  _fieldArray = fieldArray;
+        public void Initialize(int[,] fieldArray) {
+              _fieldArray = fieldArray;
             //TODO: не выделять память под новые, если не первый запуск
             _squaresToDelete = new List<Vector2Int>();
             _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
             _crossToCheckForMatch = new List<(Vector2Int, Vector2Int)>();
 
 
+            /*
             //test
             _fieldArray = new int[,] {
                 {0, 2, 0},
@@ -41,6 +42,7 @@ namespace Scripts {
                 {0, 1, 0},
                 {1, 1, 0}
             };
+            */
 
           //  FirstSwipe(new Vector2Int(3, 2), new Vector2Int(3, 3));
         }
@@ -80,7 +82,12 @@ namespace Scripts {
                 PrintMatrix(_fieldArray);
                 DeleteSquares(out deleted);
             }
-            OnFieldNormalizedEvent?.Invoke(_squaresToDelete, _squaresToSwap);
+
+            bool win = true;
+            foreach (var square in _fieldArray) {
+                if (square != 0) win = false;
+            }
+            OnFieldNormalizedEvent?.Invoke(_squaresToDelete, _squaresToSwap, win);
         }
         
         void DropSquares(out bool dropped) {

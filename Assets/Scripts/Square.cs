@@ -6,21 +6,16 @@ using UnityEngine;
 namespace Scripts {
     public class Square: MonoBehaviour {
 
-        [SerializeField] Vector2Int _coords;
+        [SerializeField] SpriteRenderer _sr;
         
+        public Vector2Int Coords { get; set; }
         
-        public Vector2Int Coords {
-            get => _coords;
-            set => _coords = value;
-        }  // test { get; set; }
-
-
         readonly Vector2Int _deletedSquareCoords = new Vector2Int(Int32.MaxValue, -Int32.MaxValue);
         float _speed = 0.5f; //todo: задавать при спавне
-
-
+        
         public void Set(Vector2Int coords, Sprite sprite) {
-            
+            Coords = coords;
+            _sr.sprite = sprite;
         }
         
         public void Move(int stepsVertical, int stepsHorizontal) {
