@@ -24,26 +24,9 @@ namespace Scripts {
         
         public void Initialize(int[,] fieldArray) {
               _fieldArray = fieldArray;
-            //TODO: не выделять память под новые, если не первый запуск
             _squaresToDelete = new List<Vector2Int>();
             _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
             _crossToCheckForMatch = new List<(Vector2Int, Vector2Int)>();
-        }
-
-
-        //test
-        public void PrintMatrix(int[,] matrix) {
-            Debug.Log("_________________________________________");
-            for (int row = 0; row < matrix.GetLength(0); row++) {
-
-                var line = new int[matrix.GetLength(1)];
-
-                for (int column = 0; column < matrix.GetLength(1); column++) {
-                    line[column] = matrix[row, column];
-                }
-
-                Debug.Log(String.Join(",", line));
-            }
         }
         
         public void FirstSwipe(Vector2Int start, Vector2Int target) {
@@ -60,9 +43,7 @@ namespace Scripts {
             bool dropped = true;
             bool deleted = true;
             while (dropped || deleted) {
-                PrintMatrix(_fieldArray);
                 DropSquares(out dropped);
-                PrintMatrix(_fieldArray);
                 DeleteSquares(out deleted);
             }
             bool win = true;

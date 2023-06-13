@@ -29,7 +29,6 @@ namespace Scripts {
         }
         
         public void SwapFirst(Vector2Int start, Vector2Int target) {
-            Debug.Log("Blocking interaction");
             foreach (var square in _allSquares) {
                 square.SetInteraction(false);
             }
@@ -74,9 +73,8 @@ namespace Scripts {
             }
         }
         IEnumerator DeleteCor(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
-            Debug.Log("Deleting with delay: " + delay);
             yield return new WaitForSeconds(delay);
-            float interactionDelay = squaresToDelete.Count > 1 ? 0.4f : 0f;
+            float interactionDelay = squaresToDelete.Count > 1 ? 0.5f : 0f;
             UnblockInteraction(squaresToDrop, squaresToDelete, interactionDelay);
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
@@ -112,7 +110,6 @@ namespace Scripts {
 
         IEnumerator UnblockInteractionCor(float delay) {
             yield return new WaitForSeconds(delay);
-            Debug.Log("Unblocking interaction with delay: " + delay);
             foreach (var square in _allSquares) {
                 square.SetInteraction(true);
             }

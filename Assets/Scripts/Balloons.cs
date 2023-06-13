@@ -16,21 +16,22 @@ namespace Scripts {
         [SerializeField] float _minYPos;
         [SerializeField] GameObject _baloonPrefab;
         [SerializeField] List<Sprite> _sprites;
-
-
+        
         List<Balloon> _balloons;
+        float _leftBound;
+        float _rightBound;
         void Start() {
             Spawn();
+            _leftBound = -CameraCalculator.Instance.ScreenWidthHalved - _screenBoundsPaddingMin;
+            _rightBound = -_leftBound;
         }
 
         void Update() {
             foreach (var balloon in _balloons) {
-                if (balloon.MovingLeft && balloon.transform.position.x <
-                    -CameraCalculator.Instance.ScreenWidthHalved - _screenBoundsPaddingMin) {
+                if (balloon.MovingLeft && balloon.transform.position.x < _leftBound) {
                     SendBack(balloon);
                 }
-                if (!balloon.MovingLeft && balloon.transform.position.x >
-                    CameraCalculator.Instance.ScreenWidthHalved + _screenBoundsPaddingMin) {
+                if (!balloon.MovingLeft && balloon.transform.position.x > _rightBound) {
                     SendBack(balloon);
                 }
             }
@@ -44,16 +45,14 @@ namespace Scripts {
                 SendBack(balloon);
             }
         }
-
-
+        
         void SendBack(Balloon balloon) {
             float speedX = Random.Range(_minSpeedX, _maxSpeedX);
             float speedY = Random.Range(_minSpeedY, _maxSpeedY);
             int spriteIndex = Random.Range(0, _sprites.Count);
             balloon.SetPositionAndSpeed(GetRandomPosition(out bool direction), speedX, speedY, direction, _sprites[spriteIndex]);
         }
-
-
+        
         Vector3 GetRandomPosition(out bool direction) {
             bool left = GetRandomDirection();
             direction = left;

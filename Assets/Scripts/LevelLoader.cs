@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace Scripts {
     public class LevelLoader: MonoBehaviour {
-
+        
         int[,] _fieldArray;
         public event Action<int[,]> OnLevelLoadedEvent;
         static int s_level;

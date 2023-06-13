@@ -14,7 +14,7 @@ namespace Scripts {
 
         public event Action<Vector2Int, Vector2Int> OnTryingToSwapEvent;
         public Vector2Int Coords { get; set; }
-
+        
         AnimationConfigSO _animationConfigSo;
         readonly Vector2Int _deletedSquareCoords = new(Int32.MaxValue, -Int32.MaxValue);
         float _speed = 0.5f; 

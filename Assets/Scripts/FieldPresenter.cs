@@ -15,9 +15,7 @@ namespace Scripts {
         void Initialize(int[,] fieldArray) {
             _model = new FieldModel();
             _model.Initialize(fieldArray);
-            
             _view.Initialize(fieldArray);
-            
             _model.OnFirstSwipeEvent += _view.SwapFirst;
             _model.OnFieldNormalizedEvent += _view.Normalize;
             _view.OnTryingToSwapFirstEvent += _model.FirstSwipe;
