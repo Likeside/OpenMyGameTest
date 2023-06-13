@@ -2,13 +2,16 @@ using System;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Scripts {
-    public class Square: MonoBehaviour {
+    public class Square: MonoBehaviour, IBeginDragHandler, IDragHandler {
 
         [SerializeField] SpriteRenderer _sr;
         [SerializeField] Animator _animator;
-        
+        [SerializeField] Collider2D _collider;
+
+        public event Action<Vector2Int, Vector2Int> OnTryingToSwapEvent;
         public Vector2Int Coords { get; set; }
 
         AnimationConfigSO _animationConfigSo;
@@ -36,18 +39,42 @@ namespace Scripts {
         }
         
         public void Delete() {
-         //   transform.DOScale(Vector3.zero, _speed);//TODO: добавить анимацию 
             Coords = _deletedSquareCoords;
             _animator.SetTrigger(_animationConfigSo.animationConfigs.FirstOrDefault(_ => _.representation == _representation).destroyTrigger);
-            //  transform.localScale = Vector3.zero;
         }
 
         public void SetInteraction(bool active) {
-            
+            _collider.enabled = active;
         }
 
         void SetSortingOrder() {
             _sr.sortingOrder = _maxSquares - Coords.x * 2 + Coords.y;
+        }
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            Debug.Log(eventData.delta);
+            Vector2Int target = Coords;
+            if (MathF.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y)) {
+                if (eventData.delta.x > 0) {
+                    target += Vector2Int.up;
+                }
+                else {
+                    target += Vector2Int.down;
+                }
+            }
+            else {
+                if (eventData.delta.y > 0) {
+                    target += Vector2Int.right;
+                }
+                else {
+                    target += Vector2Int.left;
+                }
+            }
+            OnTryingToSwapEvent?.Invoke(Coords, target);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            
         }
     }
 }

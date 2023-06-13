@@ -19,6 +19,9 @@ namespace Scripts {
        
        public void Initialize(int[,] fieldArray) {
            _allSquares = _grid.CreateGrid(fieldArray);
+           foreach (var square in _allSquares) {
+               square.OnTryingToSwapEvent += TryToSwapFirst;
+           }
        }
 
         public void TryToSwapFirst(Vector2Int start, Vector2Int target) {
@@ -111,7 +114,12 @@ namespace Scripts {
             foreach (var square in _allSquares) {
                 square.SetInteraction(true);
             }
-            if (_win) OnAllClearedEvent?.Invoke(); //если анимации закончены (а поле в модели заполнено нулями) - побеждаем
+            if (_win) {
+                foreach (var square in _allSquares) {
+                    square.OnTryingToSwapEvent -= TryToSwapFirst;
+                }
+                OnAllClearedEvent?.Invoke(); //если анимации закончены (а поле в модели заполнено нулями) - побеждаем
+            }
         }
     }
 }
