@@ -9,16 +9,14 @@ namespace Scripts {
 
         [SerializeField] GridBase _grid;
         List<Square> _allSquares;
-
-       public event Action<Vector2Int, Vector2Int> OnTryingToSwapFirstEvent;
+        public event Action<Vector2Int, Vector2Int> OnTryingToSwapFirstEvent;
        public event Action OnAllClearedEvent;
        
        readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue);
        int _deletedSquares;
        int _droppedSquares;
        bool _win;
-
-
+       
        public void Initialize(int[,] fieldArray) {
            _allSquares = _grid.CreateGrid(fieldArray);
        }
@@ -55,7 +53,6 @@ namespace Scripts {
         }
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
-            Debug.Log("Drop");
             float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x)/2f; 
             for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
@@ -75,7 +72,6 @@ namespace Scripts {
         }
         IEnumerator DeleteCor(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
             yield return new WaitForSeconds(delay);
-            Debug.Log("Delete");
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
                 UnblockInteraction(squaresToDrop, squaresToDelete, 1f);
@@ -90,7 +86,6 @@ namespace Scripts {
         void DropOneSquare((Vector2Int, Vector2Int) squareToDrop) {
             var square = _allSquares.FirstOrDefault(s => s.Coords == squareToDrop.Item1);
             if (square == null) {
-                Debug.Log("Trying to drop non-existent square");
                 return;
             }
             square.Move(squareToDrop.Item2.x - squareToDrop.Item1.x, 0);
@@ -99,7 +94,6 @@ namespace Scripts {
         void DeleteOneSquare(Vector2Int squareToDelete) {
             var square = _allSquares.FirstOrDefault(s => s.Coords == squareToDelete);
             if (square == null) {
-                Debug.Log("Trying to delete non-existent square");
                 return;
             }
             square.Delete();

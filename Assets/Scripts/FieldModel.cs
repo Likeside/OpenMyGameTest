@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,16 +10,15 @@ namespace Scripts {
         //вызываем после того, как нормализовали поле, чтобы отобразить все действия по нормализации во вьюшке
         public event Action<List<Vector2Int>, List<(Vector2Int, Vector2Int)>, bool> OnFieldNormalizedEvent;
         
-        int[,] _fieldArray;
-
-        int _emptyRepresentation = 0;
-        int _orangeSquareRepresentation = 1;
-        int _blueSquareRepresentation = 2;
-        
         //эти два поля хранят порядок действий по нормализации для вьюшки 
         List<Vector2Int> _squaresToDelete;
         List<(Vector2Int, Vector2Int)> _squaresToSwap;
-
+        
+        int[,] _fieldArray;
+        int _emptyRepresentation = 0;
+        int _orangeSquareRepresentation = 1; 
+        int _blueSquareRepresentation = 2; //задал тут, но вообще для этого нужен конфиг с указанием репрезентации, цвета спрайта и тд
+        
         List<(Vector2Int, Vector2Int)> _crossToCheckForMatch; //используем ниже в методе, чтобы не создавать каждый раз новый
         readonly Vector2Int _separator = new(-Int32.MaxValue, -Int32.MaxValue); //используем как сепаратор, чтобы не спавнить лишние списки 
         
@@ -49,7 +47,7 @@ namespace Scripts {
         }
         
         public void FirstSwipe(Vector2Int start, Vector2Int target) {
-            if (!CheckIfInBoundaries(target.x, target.y)) return; //размер поля по идее надо ограничивать примерно по размеру экрана, поэтому тут тоже проверяем, внутри границ или нет
+            if (!CheckIfInBoundaries(target.x, target.y)) return; 
             if (target.x < start.x && _fieldArray[target.x, target.y] == _emptyRepresentation) return; //на пустое место не подкидываем квадрат
             (_fieldArray[start.x, start.y], _fieldArray[target.x, target.y]) = (_fieldArray[target.x, target.y], _fieldArray[start.x, start.y]); //свапаем
             OnFirstSwipeEvent?.Invoke(start, target);

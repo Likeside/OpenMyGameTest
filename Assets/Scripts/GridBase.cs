@@ -7,6 +7,8 @@ namespace Scripts {
 
     public class GridBase : MonoBehaviour {
         [SerializeField] GameObject _square;
+        [SerializeField] float _padding;
+        [SerializeField] float _maxScale;
         [SerializeField] Sprite _orangeSprite;
         [SerializeField] Sprite _blueSprite; //todo: убрать куда-то, когда сделаю анимацию
 
@@ -15,7 +17,6 @@ namespace Scripts {
 
         readonly List<GameObject> _gridSquares = new();
         readonly List<GameObject> _emptySquares = new();
-
 
         public List<Square> CreateGrid(int[,] fieldArray) {
             SpawnGridSquares(fieldArray, _square);
@@ -34,7 +35,6 @@ namespace Scripts {
                         var empty = Instantiate(square);
                         _gridSquares.Add(empty);
                         _emptySquares.Add(empty);
-
                     }
                     else {
                         var squareObj = Instantiate(square);
@@ -42,7 +42,6 @@ namespace Scripts {
                             squareArray[row, column] == 1 ? _orangeSprite : _blueSprite, maxSquares);
                         _gridSquares.Add(squareObj);
                     }
-
                     _gridSquares[_gridSquares.Count - 1].transform.SetParent(transform); //делаем все квадраты дочерними объектами сетки
                     _gridSquares[_gridSquares.Count - 1].transform.localScale = scale; 
                 }
@@ -53,29 +52,22 @@ namespace Scripts {
         void SetGridSquarePositions(int[,] squareArray) {
             int columnNumer = 0;
             int rowNumber = 0;
-
             var squareRect = _gridSquares[0].GetComponent<SpriteRenderer>();
-
             //шаг смещения квадрата равен его ширине умноженной на скейл. 
             _offset.x = squareRect.size.x * squareRect.transform.localScale.x;
             _offset.y = squareRect.size.y * squareRect.transform.localScale.y;
-
             //стартовая позиция (позиция верхнего левого квадрата) "центрирует" квадраты относительно родителя (сетки)
             _startPosition.x = -(squareArray.GetLength(1) / 2f) * (_offset.x) + _offset.x / 2f;
             _startPosition.y = (squareArray.GetLength(0) / 2f) * (_offset.y) - _offset.y / 2f;
-
             foreach (var square in _gridSquares) {
-
                 //если номер столбца превышает количество столбцов в массиве, переходим на следующий ряд
                 if (columnNumer + 1 > squareArray.GetLength(1)) {
                     columnNumer = 0;
                     rowNumber++;
                 }
-
                 //вычисляем расстояние, на которое нужно подвинуть квадрат (шаг смещения умноженное на колонку и ряд)
                 var offsetPosX = _offset.x * columnNumer;
                 var offsetPosY = _offset.y * rowNumber;
-
                 square.transform.localPosition =
                     new Vector3(_startPosition.x + offsetPosX, _startPosition.y - offsetPosY, 0);
                 columnNumer++;
@@ -85,12 +77,10 @@ namespace Scripts {
         Vector3 GetScale(int[,] fieldArray) {
             float width = fieldArray.GetLength(1);
             float height = fieldArray.GetLength(0);
-
-            float xScale = (CameraCalculator.Instance.SafeAreaWidth - 0.6f)/width;
-            float yScale = (CameraCalculator.Instance.SafeAreaHeight - 0.6f)/height; //паддинг по бокам, допустим, будет такой
-            
+            float xScale = (CameraCalculator.Instance.SafeAreaWidth - _padding)/width;
+            float yScale = (CameraCalculator.Instance.SafeAreaHeight - _padding)/height;
             float scale = xScale > yScale ? yScale : xScale;
-
+            if (scale > _maxScale) scale = _maxScale;
             return new Vector3(scale, scale, 1);
         }
 
