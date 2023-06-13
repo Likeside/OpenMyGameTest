@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Utils;
 
 namespace Scripts {
 
@@ -25,6 +26,7 @@ namespace Scripts {
 
         //спавним квадраты, их количество равно количеству элементов в массиве, на месте нулей также добавляем квадраты в список пустых
         void SpawnGridSquares(int[,] squareArray, GameObject square) {
+            var scale = GetScale(squareArray);
             int maxSquares = squareArray.GetLength(0) * squareArray.GetLength(1);
             for (int row = 0; row < squareArray.GetLength(0); ++row) {
                 for (int column = 0; column < squareArray.GetLength(1); ++column) {
@@ -41,8 +43,8 @@ namespace Scripts {
                         _gridSquares.Add(squareObj);
                     }
 
-                    _gridSquares[_gridSquares.Count - 1].transform
-                        .SetParent(transform); //делаем все квадраты дочерними объектами сетки
+                    _gridSquares[_gridSquares.Count - 1].transform.SetParent(transform); //делаем все квадраты дочерними объектами сетки
+                    _gridSquares[_gridSquares.Count - 1].transform.localScale = scale; 
                 }
             }
         }
@@ -78,6 +80,18 @@ namespace Scripts {
                     new Vector3(_startPosition.x + offsetPosX, _startPosition.y - offsetPosY, 0);
                 columnNumer++;
             }
+        }
+
+        Vector3 GetScale(int[,] fieldArray) {
+            float width = fieldArray.GetLength(1);
+            float height = fieldArray.GetLength(0);
+
+            float xScale = (CameraCalculator.Instance.SafeAreaWidth - 0.6f)/width;
+            float yScale = (CameraCalculator.Instance.SafeAreaHeight - 0.6f)/height; //паддинг по бокам, допустим, будет такой
+            
+            float scale = xScale > yScale ? yScale : xScale;
+
+            return new Vector3(scale, scale, 1);
         }
 
 //удаляем пустые квадраты
