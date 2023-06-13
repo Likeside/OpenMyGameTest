@@ -556,8 +556,7 @@ MonoBehaviour:
   _square: {fileID: 4857122008183867739, guid: e839c723768e9800daa9d858bac06f1a, type: 3}
   _padding: 1
   _maxScale: 1.5
-  _orangeSprite: {fileID: 21300000, guid: 771039de6c8ddb1929e2aa75bc0ae7f2, type: 3}
-  _blueSprite: {fileID: 21300000, guid: 920e778ae9fa1f547b44e8f93d612884, type: 3}
+  _animationConfig: {fileID: 11400000, guid: 24f09eb771fdeaed8b78934742ecea14, type: 2}
 --- !u!4 &736414302
 Transform:
   m_ObjectHideFlags: 0

@@ -9,8 +9,7 @@ namespace Scripts {
         [SerializeField] GameObject _square;
         [SerializeField] float _padding;
         [SerializeField] float _maxScale;
-        [SerializeField] Sprite _orangeSprite;
-        [SerializeField] Sprite _blueSprite; //todo: убрать куда-то, когда сделаю анимацию
+        [SerializeField] AnimationConfigSO _animationConfig; //todo: убрать куда-то, когда сделаю анимацию
 
         Vector2 _offset = Vector2.zero;
         Vector2 _startPosition;
@@ -38,8 +37,7 @@ namespace Scripts {
                     }
                     else {
                         var squareObj = Instantiate(square);
-                        squareObj.GetComponent<Square>().Set(new Vector2Int(row, column),
-                            squareArray[row, column] == 1 ? _orangeSprite : _blueSprite, maxSquares);
+                        squareObj.GetComponent<Square>().Set(new Vector2Int(row, column), squareArray[row, column], maxSquares, _animationConfig);
                         _gridSquares.Add(squareObj);
                     }
                     _gridSquares[_gridSquares.Count - 1].transform.SetParent(transform); //делаем все квадраты дочерними объектами сетки

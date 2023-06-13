@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -6,16 +7,21 @@ namespace Scripts {
     public class Square: MonoBehaviour {
 
         [SerializeField] SpriteRenderer _sr;
+        [SerializeField] Animator _animator;
         
         public Vector2Int Coords { get; set; }
-        
+
+        AnimationConfigSO _animationConfigSo;
         readonly Vector2Int _deletedSquareCoords = new(Int32.MaxValue, -Int32.MaxValue);
         float _speed = 0.5f; //todo: задавать при спавне
         int _maxSquares;
+        int _representation;
         
-        public void Set(Vector2Int coords, Sprite sprite, int maxSquares) {
+        public void Set(Vector2Int coords, int representation, int maxSquares, AnimationConfigSO animationConfigSo) {
+            _representation = representation;
+            _animationConfigSo = animationConfigSo;
             Coords = coords;
-            _sr.sprite = sprite;
+            _animator.SetTrigger(_animationConfigSo.animationConfigs.FirstOrDefault(_ => _.representation == _representation).idleTrigger);
             _maxSquares = maxSquares;
             SetSortingOrder();
         }
@@ -30,8 +36,10 @@ namespace Scripts {
         }
         
         public void Delete() {
-            transform.DOScale(Vector3.zero, _speed);//TODO: добавить анимацию 
+         //   transform.DOScale(Vector3.zero, _speed);//TODO: добавить анимацию 
             Coords = _deletedSquareCoords;
+            _animator.SetTrigger(_animationConfigSo.animationConfigs.FirstOrDefault(_ => _.representation == _representation).destroyTrigger);
+            //  transform.localScale = Vector3.zero;
         }
 
         public void SetInteraction(bool active) {
