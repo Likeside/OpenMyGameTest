@@ -48,7 +48,7 @@ namespace Scripts {
         }
 
         IEnumerator NormalizeCor(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
-            yield return new WaitForSeconds(1f); //TODO: задавать извне, ждем, пока свапнется первый квадрат
+            yield return new WaitForSeconds(1f); // ждем, пока свапнется первый квадрат, по-хорошему скорость свапа и падения блоков задавать из конфига
             _droppedSquares = 1;
             _deletedSquares = 1;
             Drop(squaresToDrop, squaresToDelete);
@@ -56,18 +56,18 @@ namespace Scripts {
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
             Debug.Log("Drop");
-            float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x)/2f;
+            float delay = MathF.Abs(squaresToDrop[0].Item1.x - squaresToDrop[0].Item2.x)/2f; 
             for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
                 if (i < squaresToDrop.Count) {
                     float diff = Mathf.Abs(squaresToDrop[i].Item1.x - squaresToDrop[i].Item2.x)/2f;
                     if (diff > delay) {
-                        delay = diff;
+                        delay = diff; //вычисляем "самый длинный путь падения" блока, чтобы перейти к удалению только после того, как упадет он
                     }
                 }
                 UnblockInteraction(squaresToDrop, squaresToDelete, delay);
                 if (i == squaresToDrop.Count || squaresToDrop[i].Item1 == _separator) {
-                    StartCoroutine(DeleteCor(squaresToDrop, squaresToDelete, delay));
+                    StartCoroutine(DeleteCor(squaresToDrop, squaresToDelete, delay)); //встретили сепаратор, перешли к этапу удаления
                     return;
                 }
                 DropOneSquare(squaresToDrop[i]);
@@ -80,7 +80,7 @@ namespace Scripts {
                 _deletedSquares++;
                 UnblockInteraction(squaresToDrop, squaresToDelete, 1f);
                 if (squaresToDelete[i] == _separator) {
-                   Drop(squaresToDrop, squaresToDelete);
+                   Drop(squaresToDrop, squaresToDelete); //встретили сепаратор, перешли к этапу падения
                     yield break;
                 }
                 DeleteOneSquare(squaresToDelete[i]);
@@ -117,7 +117,7 @@ namespace Scripts {
             foreach (var square in _allSquares) {
                 square.SetInteraction(true);
             }
-            if (_win) OnAllClearedEvent?.Invoke();
+            if (_win) OnAllClearedEvent?.Invoke(); //если анимации закончены (а поле в модели заполнено нулями) - побеждаем
         }
     }
 }

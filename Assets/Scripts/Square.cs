@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Scripts {
         
         public Vector2Int Coords { get; set; }
         
-        readonly Vector2Int _deletedSquareCoords = new Vector2Int(Int32.MaxValue, -Int32.MaxValue);
+        readonly Vector2Int _deletedSquareCoords = new(Int32.MaxValue, -Int32.MaxValue);
         float _speed = 0.5f; //todo: задавать при спавне
         
         public void Set(Vector2Int coords, Sprite sprite) {

@@ -30,21 +30,6 @@ namespace Scripts {
             _squaresToDelete = new List<Vector2Int>();
             _squaresToSwap = new List<(Vector2Int, Vector2Int)>();
             _crossToCheckForMatch = new List<(Vector2Int, Vector2Int)>();
-
-
-            /*
-            //test
-            _fieldArray = new int[,] {
-                {0, 2, 0},
-                {0, 2, 0},
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 1, 0},
-                {1, 1, 0}
-            };
-            */
-
-          //  FirstSwipe(new Vector2Int(3, 2), new Vector2Int(3, 3));
         }
 
 
@@ -82,7 +67,6 @@ namespace Scripts {
                 PrintMatrix(_fieldArray);
                 DeleteSquares(out deleted);
             }
-
             bool win = true;
             foreach (var square in _fieldArray) {
                 if (square != 0) win = false;
