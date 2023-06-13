@@ -15,6 +15,7 @@ namespace Scripts {
 
         void Start() {
             _fieldArray = JsonConvert.DeserializeObject<int[,]>(LoadTextAsset().text);
+            
             OnLevelLoadedEvent?.Invoke(_fieldArray);
         }
         

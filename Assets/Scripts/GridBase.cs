@@ -51,11 +51,11 @@ public class GridBase : MonoBehaviour
         int columnNumer = 0;
         int rowNumber = 0;
 
-        var squareRect = _gridSquares[0].GetComponent<RectTransform>();
+        var squareRect = _gridSquares[0].GetComponent<SpriteRenderer>();
         
         //шаг смещения квадрата равен его ширине умноженной на скейл. 
-        _offset.x = squareRect.rect.width * squareRect.transform.localScale.x; 
-        _offset.y = squareRect.rect.height * squareRect.transform.localScale.y; 
+        _offset.x = squareRect.size.x * squareRect.transform.localScale.x; 
+        _offset.y = squareRect.size.y * squareRect.transform.localScale.y; 
 
         //стартовая позиция (позиция верхнего левого квадрата) "центрирует" квадраты относительно родителя (сетки)
         _startPosition.x = -(squareArray.GetLength(1) / 2) * (_offset.x) + _offset.x / 2f; 
@@ -75,12 +75,7 @@ public class GridBase : MonoBehaviour
             var offsetPosX = _offset.x * columnNumer;
             var offsetPosY = _offset.y * rowNumber;
             
-
-           square.GetComponent<RectTransform>().anchoredPosition =
-                new Vector2(_startPosition.x + offsetPosX, _startPosition.y - offsetPosY);
-            square.GetComponent<RectTransform>().localPosition =
-               new Vector3(_startPosition.x + offsetPosX, _startPosition.y - offsetPosY, 0);
-
+            square.transform.localPosition = new Vector3(_startPosition.x + offsetPosX, _startPosition.y - offsetPosY, 0);
             columnNumer++;
         }
     }
