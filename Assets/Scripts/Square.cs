@@ -11,10 +11,13 @@ namespace Scripts {
         
         readonly Vector2Int _deletedSquareCoords = new(Int32.MaxValue, -Int32.MaxValue);
         float _speed = 0.5f; //todo: задавать при спавне
+        int _maxSquares;
         
-        public void Set(Vector2Int coords, Sprite sprite) {
+        public void Set(Vector2Int coords, Sprite sprite, int maxSquares) {
             Coords = coords;
             _sr.sprite = sprite;
+            _maxSquares = maxSquares;
+            SetSortingOrder();
         }
         
         public void Move(int stepsVertical, int stepsHorizontal) {
@@ -22,7 +25,7 @@ namespace Scripts {
             var targetPos = transform.localPosition + new Vector3(stepsHorizontal * transform.localScale.x,
                 -stepsVertical * transform.localScale.y);
             float speedModifier = Math.Abs(stepsVertical) > Math.Abs(stepsHorizontal) ? stepsVertical : stepsHorizontal;
-            transform.DOLocalMove(targetPos, _speed * Math.Abs(speedModifier)).SetEase(Ease.InCubic);
+            transform.DOLocalMove(targetPos, _speed * Math.Abs(speedModifier)).SetEase(Ease.InCubic).onComplete = SetSortingOrder;
             Coords += new Vector2Int(stepsVertical, stepsHorizontal);
         }
         
@@ -33,6 +36,10 @@ namespace Scripts {
 
         public void SetInteraction(bool active) {
             
+        }
+
+        void SetSortingOrder() {
+            _sr.sortingOrder = _maxSquares - Coords.x * 2 + Coords.y;
         }
     }
 }

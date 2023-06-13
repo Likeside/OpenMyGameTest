@@ -25,6 +25,7 @@ namespace Scripts {
 
         //спавним квадраты, их количество равно количеству элементов в массиве, на месте нулей также добавляем квадраты в список пустых
         void SpawnGridSquares(int[,] squareArray, GameObject square) {
+            int maxSquares = squareArray.GetLength(0) * squareArray.GetLength(1);
             for (int row = 0; row < squareArray.GetLength(0); ++row) {
                 for (int column = 0; column < squareArray.GetLength(1); ++column) {
                     if (squareArray[row, column] == 0) {
@@ -36,7 +37,7 @@ namespace Scripts {
                     else {
                         var squareObj = Instantiate(square);
                         squareObj.GetComponent<Square>().Set(new Vector2Int(row, column),
-                            squareArray[row, column] == 1 ? _orangeSprite : _blueSprite);
+                            squareArray[row, column] == 1 ? _orangeSprite : _blueSprite, maxSquares);
                         _gridSquares.Add(squareObj);
                     }
 
