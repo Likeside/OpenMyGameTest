@@ -48,14 +48,13 @@ namespace Scripts {
         }
 
         IEnumerator NormalizeCor(List<Vector2Int> squaresToDelete, List<(Vector2Int, Vector2Int)> squaresToDrop) {
-            yield return new WaitForSeconds(1f); // ждем, пока свапнется первый квадрат, по-хорошему скорость свапа и падения блоков задавать из конфига
+            yield return new WaitForSeconds(0.5f); // ждем, пока свапнется первый квадрат, по-хорошему скорость свапа и падения блоков задавать из конфига
             _droppedSquares = 1;
             _deletedSquares = 1;
             Drop(squaresToDrop, squaresToDelete);
         }
         
         void Drop(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete) {
-            Debug.Log("Drop");
             float delay = 0;
             for (int i = _droppedSquares; i <= squaresToDrop.Count; i++) {
                 _droppedSquares++;
@@ -73,9 +72,14 @@ namespace Scripts {
             }
         }
         IEnumerator DeleteCor(List<(Vector2Int, Vector2Int)> squaresToDrop, List<Vector2Int> squaresToDelete, float delay) {
-            yield return new WaitForSeconds(delay);
             float interactionDelay = squaresToDelete.Count > 1 ? 0.5f : 0f;
-            UnblockInteraction(squaresToDrop, squaresToDelete, interactionDelay);
+            if (interactionDelay == 0) {
+                UnblockInteraction(squaresToDrop, squaresToDelete, interactionDelay);
+            }
+            yield return new WaitForSeconds(delay);
+            if (interactionDelay != 0) {
+                UnblockInteraction(squaresToDrop, squaresToDelete, interactionDelay);
+            }
             for (int i = _deletedSquares; i < squaresToDelete.Count; i++) {
                 _deletedSquares++;
                 if (squaresToDelete[i] == _separator) {

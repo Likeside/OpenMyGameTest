@@ -54,7 +54,6 @@ namespace Scripts {
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
-            Debug.Log(eventData.delta);
             Vector2Int target = Coords;
             if (MathF.Abs(eventData.delta.x) > Mathf.Abs(eventData.delta.y)) {
                 if (eventData.delta.x > 0) {

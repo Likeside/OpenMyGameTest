@@ -30,7 +30,5 @@ namespace Scripts {
             }
             return jsonText;
         }
-        
-        
     }
 }
